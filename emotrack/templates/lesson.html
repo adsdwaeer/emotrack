@@ -40,22 +40,21 @@
   <div class="chart-box tall"><canvas id="ch-participants"></canvas></div>
 </div>
 
-<div class="grid two">
-  <div class="card">
+<div class="card">
     <h2>Участники</h2>
     <table>
       <thead><tr>
         <th>Участник</th><th>Индекс</th><th>Уровень</th>
-        <th class="num">Лицо в кадре</th><th>Преобладающая эмоция</th><th>Риск</th>
+        <th class="num" title="Доля кадров, где лицо найдено и прошло проверку качества">Лицо в кадре</th><th>Преобладающая эмоция</th><th>Риск</th>
       </tr></thead>
       <tbody id="participants"></tbody>
     </table>
-  </div>
-  <div class="card">
+</div>
+
+<div class="card">
     <h2>Распределение эмоций</h2>
-    <div class="chart-box tall"><canvas id="ch-emotions"></canvas></div>
+    <div class="chart-box" id="emotions-box"><canvas id="ch-emotions"></canvas></div>
     <div class="hint">Средние вероятности эмоций по кадрам, где лицо найдено и прошло проверку качества.</div>
-  </div>
 </div>
 {% endblock %}
 
@@ -78,7 +77,7 @@ async function load() {
   // KPI
   const idx = sum.engagement;
   document.getElementById("k-index").innerHTML = idx !== null ? idx.toFixed(1) : "—";
-  document.getElementById("k-level").innerHTML = badge(idx);
+  document.getElementById("k-level").innerHTML = levelBadge(idx);
   document.getElementById("k-part").textContent = sum.participants;
   document.getElementById("k-frames").textContent = L.frames ? `обработано кадров: ${L.frames}` : "";
   document.getElementById("k-risk").innerHTML = sum.at_risk
@@ -96,10 +95,10 @@ async function load() {
     <tr class="${p.risk ? "risk" : ""}">
       <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${colorOf[p.track_id]};margin-right:6px"></span>
           <b>${esc(p.track_id)}</b>${p.student_id ? ` · ${esc(p.student_id)}` : ""}</td>
-      <td>${indexBar(p.engagement)}</td>
-      <td>${badge(p.engagement)}</td>
+      <td style="min-width:150px">${indexBar(p.engagement)}</td>
+      <td>${levelBadge(p.engagement)}</td>
       <td class="num">${p.frames_total ? Math.round(100 * p.frames_with_face / p.frames_total) : 0} %</td>
-      <td>${topEmotion(p.emotions)}</td>
+      <td class="nowrap">${topEmotion(p.emotions)}</td>
       <td>${p.risk ? '<span class="risk-flag">⚠ зона риска</span>' : "—"}</td>
     </tr>`).join("") : '<tr><td colspan="6" class="empty">Лица не обнаружены</td></tr>';
 
@@ -155,6 +154,7 @@ async function load() {
   // Распределение эмоций: занятие в целом + каждый участник (100 % столбцы)
   const rows = [{ name: "Всё занятие", probs: sum.emotions }]
     .concat(parts.filter(p => p.emotions).map(p => ({ name: p.track_id, probs: p.emotions })));
+  document.getElementById("emotions-box").style.height = `${90 + rows.length * 34}px`;
   new Chart(document.getElementById("ch-emotions"), {
     type: "bar",
     data: {
@@ -168,7 +168,7 @@ async function load() {
       indexAxis: "y", maintainAspectRatio: false, animation: false,
       scales: { x: { stacked: true, min: 0, max: 100, title: { display: true, text: "%" } },
                 y: { stacked: true, grid: { display: false } } },
-      plugins: { legend: { position: "bottom", labels: { boxWidth: 12 } },
+      plugins: { legend: { position: "top", align: "start", labels: { boxWidth: 12 } },
                  tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.x.toFixed(1)} %` } } },
     },
   });

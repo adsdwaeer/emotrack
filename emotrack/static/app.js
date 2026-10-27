@@ -25,6 +25,13 @@ function badge(v) {
   return `<span class="badge ${lvl}">${v.toFixed(1)} · ${LEVEL_RU[lvl]}</span>`;
 }
 
+// Только уровень, без числа — когда число уже показано рядом
+function levelBadge(v) {
+  const lvl = levelOf(v);
+  if (!lvl) return '<span class="badge grey">нет данных</span>';
+  return `<span class="badge ${lvl}">${LEVEL_RU[lvl]}</span>`;
+}
+
 function indexBar(v) {
   const lvl = levelOf(v) || "red";
   const w = Math.max(0, Math.min(100, v || 0));

@@ -66,7 +66,7 @@ async function tick() {
   const data = await resp.json();
   drawFaces(data.faces);
   document.getElementById("live-index").textContent = data.engagement !== null ? data.engagement.toFixed(1) : "—";
-  document.getElementById("live-level").innerHTML = badge(data.engagement);
+  document.getElementById("live-level").innerHTML = levelBadge(data.engagement);
   const now = Object.fromEntries(data.faces.map(f => [f.participant, f]));
   document.getElementById("live-parts").innerHTML = data.participants.map(p => `
     <tr class="${p.risk ? "risk" : ""}"><td><b>${p.track_id}</b></td><td>${indexBar(p.engagement)}</td>

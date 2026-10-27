@@ -9,7 +9,10 @@
   <h2>Загрузить запись занятия</h2>
   <form class="upload" id="upload">
     <input type="text" name="title" placeholder="Название занятия, например «Лекция 5. Нейросети»">
-    <input type="file" name="file" accept="video/*" required>
+    <label class="btn">Выбрать видео…
+      <input type="file" name="file" accept="video/*" hidden id="file">
+    </label>
+    <span id="file-name" class="hint" style="margin:0">файл не выбран</span>
     <button class="btn primary" type="submit">Загрузить и обработать</button>
     <span id="upload-msg" class="hint" style="margin:0"></span>
   </form>
@@ -22,7 +25,7 @@
     <thead>
       <tr>
         <th>№</th><th>Занятие</th><th>Дата</th><th>Источник</th><th>Статус</th>
-        <th class="num">Длительность</th><th class="num">Участников</th><th class="num">В зоне риска</th>
+        <th class="num">Длит.</th><th class="num">Участников</th><th class="num">В зоне риска</th>
         <th>Индекс занятия</th>
       </tr>
     </thead>
@@ -56,26 +59,35 @@ async function loadLessons() {
     return `<tr>
       <td>${r.id}</td>
       <td><a href="/lessons/${r.id}">${esc(r.title)}</a></td>
-      <td>${esc(r.created_at.replace("T", " ").slice(0, 16))}</td>
+      <td class="nowrap">${esc(r.created_at.replace("T", " ").slice(0, 16))}</td>
       <td>${r.source === "live" ? "веб-камера" : "видеозапись"}</td>
       <td>${status}</td>
       <td class="num">${r.duration_sec ? fmtTime(r.duration_sec) : "—"}</td>
       <td class="num">${r.participants}</td>
       <td class="num">${r.at_risk ? `<span class="risk-flag">${r.at_risk}</span>` : "0"}</td>
-      <td>${r.engagement !== null ? badge(r.engagement) : '<span class="badge grey">—</span>'}</td>
+      <td class="nowrap">${r.engagement !== null ? badge(r.engagement) : '<span class="badge grey">—</span>'}</td>
     </tr>`;
   }).join("");
   if (busy) setTimeout(loadLessons, 2000);
 }
 
+document.getElementById("file").addEventListener("change", (ev) => {
+  document.getElementById("file-name").textContent = ev.target.files[0]?.name || "файл не выбран";
+});
+
 document.getElementById("upload").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const msg = document.getElementById("upload-msg");
+  if (!document.getElementById("file").files.length) { msg.textContent = "Выберите видеофайл"; return; }
   msg.textContent = "Загрузка видео…";
   const resp = await fetch("/api/lessons", { method: "POST", body: new FormData(ev.target) });
   const data = await resp.json();
   msg.textContent = resp.ok ? `Занятие №${data.id} поставлено в обработку` : (data.detail || "Ошибка загрузки");
-  if (resp.ok) { ev.target.reset(); loadLessons(); }
+  if (resp.ok) {
+    ev.target.reset();
+    document.getElementById("file-name").textContent = "файл не выбран";
+    loadLessons();
+  }
 });
 
 loadLessons();
