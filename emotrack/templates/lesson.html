@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} — ЭмоТрек{% endblock %}
+{% block nav_lessons %}active{% endblock %}
+{% block content %}
+<div class="head-row">
+  <div>
+    <h1>{{ lesson.title }}</h1>
+    <p class="sub" id="meta">Занятие №{{ lesson.id }}</p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="/">← Все занятия</a>
+    <a class="btn primary" href="/api/lessons/{{ lesson.id }}/export.csv">Экспорт CSV</a>
+  </div>
+</div>
+
+<div class="grid kpi">
+  <div class="card"><div class="label">Индекс вовлечённости занятия</div>
+    <div class="value" id="k-index">—</div><div class="note" id="k-level"></div></div>
+  <div class="card"><div class="label">Участников</div>
+    <div class="value" id="k-part">—</div><div class="note" id="k-frames"></div></div>
+  <div class="card"><div class="label">В зоне риска (индекс &lt; 40)</div>
+    <div class="value" id="k-risk">—</div><div class="note" id="k-risk-names"></div></div>
+  <div class="card"><div class="label">Длительность</div>
+    <div class="value" id="k-dur">—</div><div class="note" id="k-proc"></div></div>
+</div>
+
+<div class="card">
+  <h2>Индекс вовлечённости занятия по минутам</h2>
+  <div class="chart-box"><canvas id="ch-minutes"></canvas></div>
+  <div class="legend-levels">
+    <span><span class="badge green">≥ 70</span> высокий</span>
+    <span><span class="badge yellow">40–69</span> средний</span>
+    <span><span class="badge red">&lt; 40</span> низкий</span>
+    <span>Среднее по всем участникам за каждую минуту</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Индекс участников по 30-секундным интервалам</h2>
+  <div class="chart-box tall"><canvas id="ch-participants"></canvas></div>
+</div>
+
+<div class="grid two">
+  <div class="card">
+    <h2>Участники</h2>
+    <table>
+      <thead><tr>
+        <th>Участник</th><th>Индекс</th><th>Уровень</th>
+        <th class="num">Лицо в кадре</th><th>Преобладающая эмоция</th><th>Риск</th>
+      </tr></thead>
+      <tbody id="participants"></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Распределение эмоций</h2>
+    <div class="chart-box tall"><canvas id="ch-emotions"></canvas></div>
+    <div class="hint">Средние вероятности эмоций по кадрам, где лицо найдено и прошло проверку качества.</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const LESSON_ID = {{ lesson.id }};
+
+async function load() {
+  const [sum, parts, tl] = await Promise.all([
+    fetch(`/api/lessons/${LESSON_ID}`).then(r => r.json()),
+    fetch(`/api/lessons/${LESSON_ID}/participants`).then(r => r.json()),
+    fetch(`/api/lessons/${LESSON_ID}/timeline`).then(r => r.json()),
+  ]);
+  const L = sum.lesson;
+  const STATUS_RU = { queued: "в очереди", processing: "обработка", done: "готово", error: "ошибка" };
+  document.getElementById("meta").textContent =
+    `Занятие №${L.id} · ${L.created_at.replace("T", " ").slice(0, 16)} · ` +
+    `${L.source === "live" ? "веб-камера" : "видеозапись"} · статус: ${STATUS_RU[L.status] || L.status}`;
+
+  // KPI
+  const idx = sum.engagement;
+  document.getElementById("k-index").innerHTML = idx !== null ? idx.toFixed(1) : "—";
+  document.getElementById("k-level").innerHTML = badge(idx);
+  document.getElementById("k-part").textContent = sum.participants;
+  document.getElementById("k-frames").textContent = L.frames ? `обработано кадров: ${L.frames}` : "";
+  document.getElementById("k-risk").innerHTML = sum.at_risk
+    ? `<span class="risk-flag">${sum.at_risk}</span>` : "0";
+  const riskNames = parts.filter(p => p.risk).map(p => p.student_id || p.track_id);
+  document.getElementById("k-risk-names").textContent = riskNames.length ? riskNames.join(", ") : "никого";
+  document.getElementById("k-dur").textContent = L.duration_sec ? fmtTime(L.duration_sec) : "—";
+  document.getElementById("k-proc").textContent = L.processing_sec
+    ? `обработка ${L.processing_sec.toFixed(1)} с · ${L.device || ""} · ${L.detector || ""}` : "";
+
+  // Таблица участников
+  const colorOf = {};
+  parts.forEach((p, i) => colorOf[p.track_id] = SERIES[i % SERIES.length]);
+  document.getElementById("participants").innerHTML = parts.length ? parts.map(p => `
+    <tr class="${p.risk ? "risk" : ""}">
+      <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${colorOf[p.track_id]};margin-right:6px"></span>
+          <b>${esc(p.track_id)}</b>${p.student_id ? ` · ${esc(p.student_id)}` : ""}</td>
+      <td>${indexBar(p.engagement)}</td>
+      <td>${badge(p.engagement)}</td>
+      <td class="num">${p.frames_total ? Math.round(100 * p.frames_with_face / p.frames_total) : 0} %</td>
+      <td>${topEmotion(p.emotions)}</td>
+      <td>${p.risk ? '<span class="risk-flag">⚠ зона риска</span>' : "—"}</td>
+    </tr>`).join("") : '<tr><td colspan="6" class="empty">Лица не обнаружены</td></tr>';
+
+  // График по минутам
+  new Chart(document.getElementById("ch-minutes"), {
+    type: "line",
+    data: {
+      labels: sum.minutes.map(m => `${m.minute}–${m.minute + 1} мин`),
+      datasets: [{
+        label: "Индекс занятия", data: sum.minutes.map(m => m.engagement),
+        borderColor: "#17171a", backgroundColor: "#17171a", borderWidth: 2,
+        pointRadius: 4, pointHoverRadius: 6, tension: 0.25,
+      }],
+    },
+    options: {
+      maintainAspectRatio: false, animation: false,
+      interaction: { mode: "index", intersect: false },
+      scales: { y: { min: 0, max: 100, title: { display: true, text: "Индекс, 0–100" } },
+                x: { grid: { display: false } } },
+      plugins: { legend: { display: false },
+                 tooltip: { callbacks: { label: c => ` Индекс: ${c.parsed.y.toFixed(1)} (${LEVEL_RU[levelOf(c.parsed.y)]})` } } },
+    },
+    plugins: [levelBands],
+  });
+
+  // График по участникам (30-с интервалы)
+  const starts = [...new Set(tl.intervals.map(i => i.t_start))].sort((a, b) => a - b);
+  const byPart = {};
+  for (const it of tl.intervals) (byPart[it.track_id] ??= {})[it.t_start] = it.engagement;
+  new Chart(document.getElementById("ch-participants"), {
+    type: "line",
+    data: {
+      labels: starts.map(fmtTime),
+      datasets: parts.map(p => ({
+        label: p.track_id + (p.risk ? " ⚠" : ""),
+        data: starts.map(t => byPart[p.track_id]?.[t] ?? null),
+        borderColor: colorOf[p.track_id], backgroundColor: colorOf[p.track_id],
+        borderWidth: 2, pointRadius: 2, pointHoverRadius: 5, tension: 0.2, spanGaps: false,
+      })),
+    },
+    options: {
+      maintainAspectRatio: false, animation: false,
+      interaction: { mode: "index", intersect: false },
+      scales: { y: { min: 0, max: 100, title: { display: true, text: "Индекс, 0–100" } },
+                x: { title: { display: true, text: "Начало интервала, мин:с" }, grid: { display: false } } },
+      plugins: { legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 3 } },
+                 tooltip: { itemSort: (a, b) => b.parsed.y - a.parsed.y,
+                            callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}` } } },
+    },
+    plugins: [levelBands],
+  });
+
+  // Распределение эмоций: занятие в целом + каждый участник (100 % столбцы)
+  const rows = [{ name: "Всё занятие", probs: sum.emotions }]
+    .concat(parts.filter(p => p.emotions).map(p => ({ name: p.track_id, probs: p.emotions })));
+  new Chart(document.getElementById("ch-emotions"), {
+    type: "bar",
+    data: {
+      labels: rows.map(r => r.name),
+      datasets: EMOTIONS.map(e => ({
+        label: EMOTION_RU[e], data: rows.map(r => r.probs ? +(r.probs[e] * 100).toFixed(1) : 0),
+        backgroundColor: EMOTION_COLOR[e], borderColor: "#ffffff", borderWidth: 1, barPercentage: 0.75,
+      })),
+    },
+    options: {
+      indexAxis: "y", maintainAspectRatio: false, animation: false,
+      scales: { x: { stacked: true, min: 0, max: 100, title: { display: true, text: "%" } },
+                y: { stacked: true, grid: { display: false } } },
+      plugins: { legend: { position: "bottom", labels: { boxWidth: 12 } },
+                 tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.x.toFixed(1)} %` } } },
+    },
+  });
+
+  if (L.status === "processing" || L.status === "queued") setTimeout(() => location.reload(), 5000);
+}
+load();
+</script>
+{% endblock %}

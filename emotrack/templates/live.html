@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Живой режим — ЭмоТрек{% endblock %}
+{% block nav_live %}active{% endblock %}
+{% block content %}
+<h1>Живой режим</h1>
+<p class="sub">Кадр с веб-камеры отправляется на сервер раз в 2 секунды. Кадры не сохраняются — только вероятности эмоций и индекс.</p>
+
+<div class="live-grid">
+  <div class="card">
+    <div class="video-wrap">
+      <video id="video" autoplay muted playsinline></video>
+      <canvas id="overlay"></canvas>
+    </div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn primary" id="start">Начать занятие</button>
+      <button class="btn" id="stop" disabled>Завершить</button>
+      <span class="hint" id="state" style="margin:0">Камера не подключена</span>
+    </div>
+  </div>
+  <div>
+    <div class="card">
+      <div class="kpi"><div class="label">Текущий индекс занятия</div>
+        <div class="value" id="live-index">—</div><div class="note" id="live-level"></div></div>
+    </div>
+    <div class="card">
+      <h2>Участники</h2>
+      <table>
+        <thead><tr><th>Участник</th><th>Индекс за занятие</th><th>Сейчас</th></tr></thead>
+        <tbody id="live-parts"><tr><td colspan="3" class="empty">Нет данных</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const video = document.getElementById("video");
+const overlay = document.getElementById("overlay");
+const grab = document.createElement("canvas");
+let lessonId = null, timer = null;
+
+function drawFaces(faces) {
+  overlay.width = video.videoWidth; overlay.height = video.videoHeight;
+  const ctx = overlay.getContext("2d");
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+  ctx.lineWidth = 3; ctx.font = "bold 18px system-ui";
+  for (const f of faces) {
+    const [x, y, w, h] = f.box;
+    const color = f.quality_ok ? { green: "#0ca30c", yellow: "#fab219", red: "#d03b3b" }[f.level] : "#898781";
+    ctx.strokeStyle = color; ctx.strokeRect(x, y, w, h);
+    const text = f.quality_ok ? `${f.participant}: ${EMOTION_RU[f.top_emotion]} · ${f.engagement.toFixed(0)}`
+                              : `${f.participant}: ${f.quality.reasons.join(", ")}`;
+    ctx.fillStyle = color; ctx.fillRect(x, y - 26, ctx.measureText(text).width + 12, 26);
+    ctx.fillStyle = "#fff"; ctx.fillText(text, x + 6, y - 7);
+  }
+}
+
+async function tick() {
+  grab.width = video.videoWidth; grab.height = video.videoHeight;
+  grab.getContext("2d").drawImage(video, 0, 0);
+  const blob = await new Promise(r => grab.toBlob(r, "image/jpeg", 0.85));
+  const form = new FormData(); form.append("file", blob, "frame.jpg");
+  const resp = await fetch(`/api/live/${lessonId}/frame`, { method: "POST", body: form });
+  if (!resp.ok) return;
+  const data = await resp.json();
+  drawFaces(data.faces);
+  document.getElementById("live-index").textContent = data.engagement !== null ? data.engagement.toFixed(1) : "—";
+  document.getElementById("live-level").innerHTML = badge(data.engagement);
+  const now = Object.fromEntries(data.faces.map(f => [f.participant, f]));
+  document.getElementById("live-parts").innerHTML = data.participants.map(p => `
+    <tr class="${p.risk ? "risk" : ""}"><td><b>${p.track_id}</b></td><td>${indexBar(p.engagement)}</td>
+    <td>${now[p.track_id]?.quality_ok ? EMOTION_RU[now[p.track_id].top_emotion] : "нет лица"}</td></tr>`).join("")
+    || '<tr><td colspan="3" class="empty">Лица не найдены</td></tr>';
+  document.getElementById("state").textContent = `Идёт занятие №${lessonId} · ${fmtTime(data.t)}`;
+}
+
+document.getElementById("start").onclick = async () => {
+  try {
+    video.srcObject = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+  } catch (e) {
+    document.getElementById("state").textContent = "Нет доступа к камере: " + e.message;
+    return;
+  }
+  const form = new FormData(); form.append("title", "Живое занятие " + new Date().toLocaleString("ru-RU"));
+  lessonId = (await (await fetch("/api/live", { method: "POST", body: form })).json()).id;
+  document.getElementById("start").disabled = true;
+  document.getElementById("stop").disabled = false;
+  timer = setInterval(tick, 2000);
+};
+
+document.getElementById("stop").onclick = async () => {
+  clearInterval(timer);
+  await fetch(`/api/live/${lessonId}/finish`, { method: "POST" });
+  video.srcObject?.getTracks().forEach(t => t.stop());
+  location.href = `/lessons/${lessonId}`;
+};
+</script>
+{% endblock %}

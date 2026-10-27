@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Занятия — ЭмоТрек{% endblock %}
+{% block nav_lessons %}active{% endblock %}
+{% block content %}
+<h1>Занятия</h1>
+<p class="sub">Индекс вовлечённости слушателей по записям онлайн-занятий и живым сессиям</p>
+
+<div class="card">
+  <h2>Загрузить запись занятия</h2>
+  <form class="upload" id="upload">
+    <input type="text" name="title" placeholder="Название занятия, например «Лекция 5. Нейросети»">
+    <input type="file" name="file" accept="video/*" required>
+    <button class="btn primary" type="submit">Загрузить и обработать</button>
+    <span id="upload-msg" class="hint" style="margin:0"></span>
+  </form>
+  <div class="hint">Видео обрабатывается в фоне (1 кадр в 2 с) и удаляется сразу после обработки — сохраняются только агрегированные показатели.</div>
+</div>
+
+<div class="card">
+  <h2>Список занятий</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>№</th><th>Занятие</th><th>Дата</th><th>Источник</th><th>Статус</th>
+        <th class="num">Длительность</th><th class="num">Участников</th><th class="num">В зоне риска</th>
+        <th>Индекс занятия</th>
+      </tr>
+    </thead>
+    <tbody id="lessons"><tr><td colspan="9" class="empty">Загрузка…</td></tr></tbody>
+  </table>
+  <div class="legend-levels">
+    <span><span class="badge green">≥ 70</span> высокая вовлечённость</span>
+    <span><span class="badge yellow">40–69</span> средняя</span>
+    <span><span class="badge red">&lt; 40</span> низкая — зона риска</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const STATUS_RU = { queued: "в очереди", processing: "обработка", done: "готово", error: "ошибка" };
+
+async function loadLessons() {
+  const rows = await (await fetch("/api/lessons")).json();
+  const body = document.getElementById("lessons");
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="9" class="empty">Занятий пока нет — загрузите запись выше.</td></tr>';
+    return;
+  }
+  let busy = false;
+  body.innerHTML = rows.map(r => {
+    let status = STATUS_RU[r.status] || r.status;
+    if (r.status === "processing" && r.source === "video") status += ` ${Math.round((r.progress || 0) * 100)} %`;
+    if (r.status === "queued" || (r.status === "processing" && r.source === "video")) busy = true;
+    if (r.status === "error") status = `<span class="risk-flag" title="${esc(r.error)}">ошибка</span>`;
+    return `<tr>
+      <td>${r.id}</td>
+      <td><a href="/lessons/${r.id}">${esc(r.title)}</a></td>
+      <td>${esc(r.created_at.replace("T", " ").slice(0, 16))}</td>
+      <td>${r.source === "live" ? "веб-камера" : "видеозапись"}</td>
+      <td>${status}</td>
+      <td class="num">${r.duration_sec ? fmtTime(r.duration_sec) : "—"}</td>
+      <td class="num">${r.participants}</td>
+      <td class="num">${r.at_risk ? `<span class="risk-flag">${r.at_risk}</span>` : "0"}</td>
+      <td>${r.engagement !== null ? badge(r.engagement) : '<span class="badge grey">—</span>'}</td>
+    </tr>`;
+  }).join("");
+  if (busy) setTimeout(loadLessons, 2000);
+}
+
+document.getElementById("upload").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const msg = document.getElementById("upload-msg");
+  msg.textContent = "Загрузка видео…";
+  const resp = await fetch("/api/lessons", { method: "POST", body: new FormData(ev.target) });
+  const data = await resp.json();
+  msg.textContent = resp.ok ? `Занятие №${data.id} поставлено в обработку` : (data.detail || "Ошибка загрузки");
+  if (resp.ok) { ev.target.reset(); loadLessons(); }
+});
+
+loadLessons();
+</script>
+{% endblock %}
