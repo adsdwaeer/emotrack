@@ -58,6 +58,7 @@ class Settings:
     model_name: str = "dima806/facial_emotions_image_detection"
     device: str = os.environ.get("EMOTRACK_DEVICE", "auto")  # auto / cuda / cpu
     batch_size: int = 32
+    fp16: bool = os.environ.get("EMOTRACK_FP16", "1") == "1"   # половинная точность на GPU
     # Модель обучалась на чёрно-белых снимках FER-2013, поэтому
     # цветные кадры с камеры переводим в оттенки серого
     grayscale: bool = True

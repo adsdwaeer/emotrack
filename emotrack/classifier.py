@@ -31,10 +31,18 @@ class EmotionClassifier:
         self.device = pick_device(device or settings.device)
         self.batch_size = batch_size or settings.batch_size
         print(f"Загрузка модели {self.model_name} на {self.device}...")
-        # PIL-вариант препроцессора: не требует torchvision (resize 224, нормализация)
-        self.processor = ViTImageProcessorPil.from_pretrained(self.model_name)
+        # Параметры препроцессинга берём из конфигурации модели (224×224, mean/std),
+        # а само преобразование делаем в OpenCV/NumPy — это в несколько раз быстрее
+        # PIL-препроцессора и не требует torchvision
+        processor = ViTImageProcessorPil.from_pretrained(self.model_name)
+        self.size = (processor.size["width"], processor.size["height"])
+        self.mean = np.array(processor.image_mean, dtype=np.float32)
+        self.std = np.array(processor.image_std, dtype=np.float32)
         self.model = AutoModelForImageClassification.from_pretrained(self.model_name)
         self.model.to(self.device).eval()
+        # На GPU считаем в половинной точности (fp16): в ~3 раза быстрее,
+        # на метрики FER-2013 не влияет (см. README)
+        self.fp16 = settings.fp16 and self.device.startswith("cuda")
         # Индексы выходов модели в нашем порядке EMOTIONS
         label2id = {k.lower(): v for k, v in self.model.config.label2id.items()}
         self.order = [label2id[e] for e in EMOTIONS]
@@ -47,16 +55,26 @@ class EmotionClassifier:
             return cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
         return cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2RGB)
 
+    def to_tensor(self, crops_bgr):
+        """Кропы -> тензор (N, 3, 224, 224): resize, [0, 1], нормализация mean/std."""
+        batch = []
+        for crop in crops_bgr:
+            rgb = self.prepare(crop)
+            upscale = rgb.shape[0] < self.size[1] or rgb.shape[1] < self.size[0]
+            rgb = cv2.resize(rgb, self.size, interpolation=cv2.INTER_LINEAR if upscale else cv2.INTER_AREA)
+            batch.append((rgb.astype(np.float32) / 255.0 - self.mean) / self.std)
+        array = np.ascontiguousarray(np.stack(batch).transpose(0, 3, 1, 2))
+        return self.torch.from_numpy(array).to(self.device)
+
     def predict(self, crops_bgr):
         """Список BGR-кропов -> массив (N, 7) вероятностей в порядке EMOTIONS."""
         if not crops_bgr:
             return np.zeros((0, len(EMOTIONS)), dtype=np.float32)
         result = []
         for i in range(0, len(crops_bgr), self.batch_size):
-            batch = [self.prepare(c) for c in crops_bgr[i:i + self.batch_size]]
-            inputs = self.processor(images=batch, return_tensors="pt").to(self.device)
-            with self.torch.no_grad():
-                logits = self.model(**inputs).logits
-            probs = self.torch.softmax(logits, dim=-1).cpu().numpy()
+            pixels = self.to_tensor(crops_bgr[i:i + self.batch_size])
+            with self.torch.no_grad(), self.torch.autocast("cuda", self.torch.float16, enabled=self.fp16):
+                logits = self.model(pixel_values=pixels).logits
+            probs = self.torch.softmax(logits.float(), dim=-1).cpu().numpy()
             result.append(probs[:, self.order])
         return np.concatenate(result).astype(np.float32)

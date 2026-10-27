@@ -87,6 +87,10 @@ class LessonAnalyzer:
 
     def result(self):
         participants = aggregate(sorted(self.frame_times), self.observations)
+        # Последняя рамка лица — только для отображения/отладки, в БД не пишется
+        boxes = {tr.track_id: [round(v, 1) for v in tr.box] for tr in self.tracker.tracks}
+        for p in participants:
+            p["box"] = boxes.get(p["track_id"])
         summary = summarize(participants)
         summary["frames_processed"] = len(self.frame_times)
         summary["faces_classified"] = self.faces_classified

@@ -1,0 +1,705 @@
+{
+ "lesson_id": 1,
+ "video": "demo_lesson.mp4",
+ "duration_sec": 480.0,
+ "device": "cuda",
+ "detector": "yunet",
+ "processing_sec": 8.79,
+ "frames_processed": 240,
+ "faces_classified": 1239,
+ "faces_rejected": 58,
+ "lesson_engagement": 55.31,
+ "lesson_level": "yellow",
+ "at_risk": 1,
+ "minutes": [
+  {
+   "minute": 0,
+   "t_start": 0,
+   "engagement": 68.72,
+   "level": "yellow"
+  },
+  {
+   "minute": 1,
+   "t_start": 60,
+   "engagement": 63.87,
+   "level": "yellow"
+  },
+  {
+   "minute": 2,
+   "t_start": 120,
+   "engagement": 53.76,
+   "level": "yellow"
+  },
+  {
+   "minute": 3,
+   "t_start": 180,
+   "engagement": 42.72,
+   "level": "yellow"
+  },
+  {
+   "minute": 4,
+   "t_start": 240,
+   "engagement": 52.29,
+   "level": "yellow"
+  },
+  {
+   "minute": 5,
+   "t_start": 300,
+   "engagement": 51.3,
+   "level": "yellow"
+  },
+  {
+   "minute": 6,
+   "t_start": 360,
+   "engagement": 51.91,
+   "level": "yellow"
+  },
+  {
+   "minute": 7,
+   "t_start": 420,
+   "engagement": 56.56,
+   "level": "yellow"
+  }
+ ],
+ "intervals_compared": 93,
+ "pearson_r": 0.9299,
+ "mae": 11.27,
+ "participants": [
+  {
+   "track_id": "P1",
+   "name": "Слушатель 4",
+   "scenario": "отходит от камеры на 2-4-й минутах, остальное время внимателен",
+   "engagement": 46.88,
+   "level": "yellow",
+   "risk": false,
+   "expected_engagement": 59.92,
+   "face_share": 0.671,
+   "first_seen_sec": 0.0,
+   "intervals": [
+    {
+     "t": 0.0,
+     "measured": 69.34,
+     "expected": 80.33,
+     "q": 1.0
+    },
+    {
+     "t": 30.0,
+     "measured": 78.57,
+     "expected": 80.33,
+     "q": 1.0
+    },
+    {
+     "t": 60.0,
+     "measured": 51.41,
+     "expected": 77.67,
+     "q": 1.0
+    },
+    {
+     "t": 90.0,
+     "measured": 71.85,
+     "expected": 77.67,
+     "q": 1.0
+    },
+    {
+     "t": 120.0,
+     "measured": 0.0,
+     "expected": 0.0,
+     "q": 0.0
+    },
+    {
+     "t": 150.0,
+     "measured": 0.0,
+     "expected": 0.0,
+     "q": 0.0
+    },
+    {
+     "t": 180.0,
+     "measured": 0.0,
+     "expected": 0.0,
+     "q": 0.0
+    },
+    {
+     "t": 210.0,
+     "measured": 0.0,
+     "expected": 0.0,
+     "q": 0.0
+    },
+    {
+     "t": 240.0,
+     "measured": 60.72,
+     "expected": 83.0,
+     "q": 0.7333
+    },
+    {
+     "t": 270.0,
+     "measured": 72.73,
+     "expected": 80.33,
+     "q": 1.0
+    },
+    {
+     "t": 300.0,
+     "measured": 62.52,
+     "expected": 81.67,
+     "q": 0.8667
+    },
+    {
+     "t": 330.0,
+     "measured": 70.8,
+     "expected": 87.0,
+     "q": 0.9333
+    },
+    {
+     "t": 360.0,
+     "measured": 67.74,
+     "expected": 80.33,
+     "q": 0.8667
+    },
+    {
+     "t": 390.0,
+     "measured": 31.88,
+     "expected": 75.0,
+     "q": 0.6
+    },
+    {
+     "t": 420.0,
+     "measured": 41.38,
+     "expected": 77.67,
+     "q": 0.7333
+    },
+    {
+     "t": 450.0,
+     "measured": 71.11,
+     "expected": 77.67,
+     "q": 1.0
+    }
+   ]
+  },
+  {
+   "track_id": "P2",
+   "name": "Слушатель 1",
+   "scenario": "активный: радость, интерес, удивление на протяжении всего занятия",
+   "engagement": 72.42,
+   "level": "green",
+   "risk": false,
+   "expected_engagement": 86.25,
+   "face_share": 0.95,
+   "first_seen_sec": 0.0,
+   "intervals": [
+    {
+     "t": 0.0,
+     "measured": 73.86,
+     "expected": 83.0,
+     "q": 1.0
+    },
+    {
+     "t": 30.0,
+     "measured": 57.44,
+     "expected": 85.67,
+     "q": 0.8667
+    },
+    {
+     "t": 60.0,
+     "measured": 77.76,
+     "expected": 82.33,
+     "q": 1.0
+    },
+    {
+     "t": 90.0,
+     "measured": 72.62,
+     "expected": 90.33,
+     "q": 1.0
+    },
+    {
+     "t": 120.0,
+     "measured": 65.48,
+     "expected": 84.33,
+     "q": 0.8667
+    },
+    {
+     "t": 150.0,
+     "measured": 68.26,
+     "expected": 83.0,
+     "q": 0.9333
+    },
+    {
+     "t": 180.0,
+     "measured": 72.58,
+     "expected": 87.0,
+     "q": 1.0
+    },
+    {
+     "t": 210.0,
+     "measured": 82.69,
+     "expected": 89.67,
+     "q": 1.0
+    },
+    {
+     "t": 240.0,
+     "measured": 65.33,
+     "expected": 84.33,
+     "q": 0.8
+    },
+    {
+     "t": 270.0,
+     "measured": 72.97,
+     "expected": 84.33,
+     "q": 1.0
+    },
+    {
+     "t": 300.0,
+     "measured": 70.47,
+     "expected": 91.0,
+     "q": 1.0
+    },
+    {
+     "t": 330.0,
+     "measured": 61.95,
+     "expected": 92.33,
+     "q": 0.7333
+    },
+    {
+     "t": 360.0,
+     "measured": 86.83,
+     "expected": 89.67,
+     "q": 1.0
+    },
+    {
+     "t": 390.0,
+     "measured": 72.11,
+     "expected": 81.67,
+     "q": 1.0
+    },
+    {
+     "t": 420.0,
+     "measured": 75.07,
+     "expected": 87.0,
+     "q": 1.0
+    },
+    {
+     "t": 450.0,
+     "measured": 83.25,
+     "expected": 84.33,
+     "q": 1.0
+    }
+   ]
+  },
+  {
+   "track_id": "P3",
+   "name": "Слушатель 3",
+   "scenario": "теряет интерес: нейтрально/радость -> грусть -> уходит от камеры",
+   "engagement": 36.53,
+   "level": "red",
+   "risk": true,
+   "expected_engagement": 40.42,
+   "face_share": 0.85,
+   "first_seen_sec": 0.0,
+   "intervals": [
+    {
+     "t": 0.0,
+     "measured": 79.66,
+     "expected": 82.33,
+     "q": 1.0
+    },
+    {
+     "t": 30.0,
+     "measured": 85.02,
+     "expected": 87.67,
+     "q": 1.0
+    },
+    {
+     "t": 60.0,
+     "measured": 82.21,
+     "expected": 87.0,
+     "q": 1.0
+    },
+    {
+     "t": 90.0,
+     "measured": 79.89,
+     "expected": 83.0,
+     "q": 1.0
+    },
+    {
+     "t": 120.0,
+     "measured": 66.21,
+     "expected": 88.33,
+     "q": 0.8667
+    },
+    {
+     "t": 150.0,
+     "measured": 24.07,
+     "expected": 35.0,
+     "q": 1.0
+    },
+    {
+     "t": 180.0,
+     "measured": 20.79,
+     "expected": 15.0,
+     "q": 0.8667
+    },
+    {
+     "t": 210.0,
+     "measured": 49.4,
+     "expected": 41.67,
+     "q": 1.0
+    },
+    {
+     "t": 240.0,
+     "measured": 38.64,
+     "expected": 35.0,
+     "q": 1.0
+    },
+    {
+     "t": 270.0,
+     "measured": 25.19,
+     "expected": 61.67,
+     "q": 0.8667
+    },
+    {
+     "t": 300.0,
+     "measured": 17.03,
+     "expected": 15.0,
+     "q": 1.0
+    },
+    {
+     "t": 330.0,
+     "measured": 11.33,
+     "expected": 15.0,
+     "q": 0.8667
+    },
+    {
+     "t": 360.0,
+     "measured": 0.0,
+     "expected": 0.0,
+     "q": 0.8667
+    },
+    {
+     "t": 390.0,
+     "measured": 0.0,
+     "expected": 0.0,
+     "q": 0.3333
+    },
+    {
+     "t": 420.0,
+     "measured": 0.0,
+     "expected": 0.0,
+     "q": 0.7333
+    },
+    {
+     "t": 450.0,
+     "measured": 5.1,
+     "expected": 0.0,
+     "q": 0.2
+    }
+   ]
+  },
+  {
+   "track_id": "P4",
+   "name": "Слушатель 5",
+   "scenario": "раздражение в середине занятия (3-5,5 мин), потом успокаивается",
+   "engagement": 49.04,
+   "level": "yellow",
+   "risk": false,
+   "expected_engagement": 55.17,
+   "face_share": 0.958,
+   "first_seen_sec": 0.0,
+   "intervals": [
+    {
+     "t": 0.0,
+     "measured": 76.15,
+     "expected": 77.67,
+     "q": 1.0
+    },
+    {
+     "t": 30.0,
+     "measured": 60.19,
+     "expected": 77.67,
+     "q": 1.0
+    },
+    {
+     "t": 60.0,
+     "measured": 57.77,
+     "expected": 75.0,
+     "q": 1.0
+    },
+    {
+     "t": 90.0,
+     "measured": 50.8,
+     "expected": 75.0,
+     "q": 1.0
+    },
+    {
+     "t": 120.0,
+     "measured": 70.13,
+     "expected": 77.67,
+     "q": 1.0
+    },
+    {
+     "t": 150.0,
+     "measured": 72.44,
+     "expected": 83.0,
+     "q": 0.8667
+    },
+    {
+     "t": 180.0,
+     "measured": 14.28,
+     "expected": 3.0,
+     "q": 0.8667
+    },
+    {
+     "t": 210.0,
+     "measured": 11.65,
+     "expected": 15.0,
+     "q": 1.0
+    },
+    {
+     "t": 240.0,
+     "measured": 0.0,
+     "expected": 0.33,
+     "q": 0.8667
+    },
+    {
+     "t": 270.0,
+     "measured": 12.38,
+     "expected": 0.33,
+     "q": 0.7333
+    },
+    {
+     "t": 300.0,
+     "measured": 25.34,
+     "expected": 7.67,
+     "q": 1.0
+    },
+    {
+     "t": 330.0,
+     "measured": 55.04,
+     "expected": 74.33,
+     "q": 1.0
+    },
+    {
+     "t": 360.0,
+     "measured": 61.21,
+     "expected": 80.33,
+     "q": 1.0
+    },
+    {
+     "t": 390.0,
+     "measured": 71.78,
+     "expected": 77.67,
+     "q": 1.0
+    },
+    {
+     "t": 420.0,
+     "measured": 82.17,
+     "expected": 81.67,
+     "q": 1.0
+    },
+    {
+     "t": 450.0,
+     "measured": 63.36,
+     "expected": 76.33,
+     "q": 1.0
+    }
+   ]
+  },
+  {
+   "track_id": "P5",
+   "name": "Слушатель 2",
+   "scenario": "спокойный: в основном нейтральное выражение",
+   "engagement": 54.41,
+   "level": "yellow",
+   "risk": false,
+   "expected_engagement": 63.17,
+   "face_share": 0.942,
+   "first_seen_sec": 0.0,
+   "intervals": [
+    {
+     "t": 0.0,
+     "measured": 48.74,
+     "expected": 67.0,
+     "q": 0.8667
+    },
+    {
+     "t": 30.0,
+     "measured": 58.26,
+     "expected": 64.33,
+     "q": 1.0
+    },
+    {
+     "t": 60.0,
+     "measured": 60.43,
+     "expected": 80.33,
+     "q": 1.0
+    },
+    {
+     "t": 90.0,
+     "measured": 43.44,
+     "expected": 64.33,
+     "q": 0.8667
+    },
+    {
+     "t": 120.0,
+     "measured": 75.22,
+     "expected": 77.67,
+     "q": 1.0
+    },
+    {
+     "t": 150.0,
+     "measured": 58.03,
+     "expected": 48.33,
+     "q": 1.0
+    },
+    {
+     "t": 180.0,
+     "measured": 67.84,
+     "expected": 77.67,
+     "q": 1.0
+    },
+    {
+     "t": 210.0,
+     "measured": 47.16,
+     "expected": 48.33,
+     "q": 1.0
+    },
+    {
+     "t": 240.0,
+     "measured": 58.38,
+     "expected": 76.33,
+     "q": 1.0
+    },
+    {
+     "t": 270.0,
+     "measured": 62.38,
+     "expected": 63.0,
+     "q": 0.8667
+    },
+    {
+     "t": 300.0,
+     "measured": 53.25,
+     "expected": 60.33,
+     "q": 1.0
+    },
+    {
+     "t": 330.0,
+     "measured": 29.4,
+     "expected": 41.67,
+     "q": 1.0
+    },
+    {
+     "t": 360.0,
+     "measured": 48.05,
+     "expected": 41.67,
+     "q": 0.9333
+    },
+    {
+     "t": 390.0,
+     "measured": 54.56,
+     "expected": 57.67,
+     "q": 0.8667
+    },
+    {
+     "t": 420.0,
+     "measured": 54.89,
+     "expected": 64.33,
+     "q": 0.8667
+    },
+    {
+     "t": 450.0,
+     "measured": 50.53,
+     "expected": 77.67,
+     "q": 0.8
+    }
+   ]
+  },
+  {
+   "track_id": "P6",
+   "name": "Слушатель 6",
+   "scenario": "подключился с опозданием (на 1,5 мин), дальше вовлечён",
+   "engagement": 72.6,
+   "level": "green",
+   "risk": false,
+   "expected_engagement": 84.46,
+   "face_share": 0.979,
+   "first_seen_sec": 92.0,
+   "intervals": [
+    {
+     "t": 90.0,
+     "measured": 54.37,
+     "expected": 76.67,
+     "q": 1.0
+    },
+    {
+     "t": 120.0,
+     "measured": 70.76,
+     "expected": 80.33,
+     "q": 1.0
+    },
+    {
+     "t": 150.0,
+     "measured": 74.58,
+     "expected": 85.67,
+     "q": 1.0
+    },
+    {
+     "t": 180.0,
+     "measured": 72.31,
+     "expected": 80.33,
+     "q": 1.0
+    },
+    {
+     "t": 210.0,
+     "measured": 73.91,
+     "expected": 87.0,
+     "q": 1.0
+    },
+    {
+     "t": 240.0,
+     "measured": 74.9,
+     "expected": 89.67,
+     "q": 0.8667
+    },
+    {
+     "t": 270.0,
+     "measured": 83.86,
+     "expected": 89.67,
+     "q": 1.0
+    },
+    {
+     "t": 300.0,
+     "measured": 80.96,
+     "expected": 83.0,
+     "q": 1.0
+    },
+    {
+     "t": 330.0,
+     "measured": 77.55,
+     "expected": 85.67,
+     "q": 1.0
+    },
+    {
+     "t": 360.0,
+     "measured": 47.25,
+     "expected": 80.33,
+     "q": 0.8667
+    },
+    {
+     "t": 390.0,
+     "measured": 81.54,
+     "expected": 84.33,
+     "q": 1.0
+    },
+    {
+     "t": 420.0,
+     "measured": 86.72,
+     "expected": 88.33,
+     "q": 1.0
+    },
+    {
+     "t": 450.0,
+     "measured": 65.11,
+     "expected": 87.0,
+     "q": 1.0
+    }
+   ]
+  }
+ ]
+}

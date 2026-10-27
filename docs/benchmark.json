@@ -1,0 +1,37 @@
+{
+  "video": "demo_lesson.mp4",
+  "cpu": "AMD Ryzen 7 7700 8-Core Processor",
+  "cpu_threads": 4,
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "torch": "2.12.0+cu130",
+  "decode_only_sec": 1.93,
+  "sampled_frames": 240,
+  "runs": {
+    "cuda": {
+      "processing_sec": 8.38,
+      "video_sec": 480.0,
+      "sampled_frames": 240,
+      "faces_classified": 1239,
+      "frames_per_sec": 28.64,
+      "faces_per_sec": 428.9,
+      "sec_per_video_minute": 1.05,
+      "realtime_factor": 57.3,
+      "detect_sec": 3.283,
+      "classify_sec": 2.889,
+      "other_sec": 2.21
+    },
+    "cpu": {
+      "processing_sec": 160.8,
+      "video_sec": 480.0,
+      "sampled_frames": 240,
+      "faces_classified": 1239,
+      "frames_per_sec": 1.49,
+      "faces_per_sec": 8.0,
+      "sec_per_video_minute": 20.1,
+      "realtime_factor": 3.0,
+      "detect_sec": 3.559,
+      "classify_sec": 155.019,
+      "other_sec": 2.22
+    }
+  }
+}
