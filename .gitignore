@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Данные: датасеты, БД, загруженные и демонстрационные видео — не в репозиторий
+data/
+*.db
+*.mp4
+*.avi
+*.mkv
+*.webm
+*.mov
+
+# Веса моделей (скачиваются скриптом scripts/download_models.py)
+models/
