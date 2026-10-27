@@ -1,0 +1,250 @@
+{
+  "model": "dima806/facial_emotions_image_detection",
+  "device": "cuda",
+  "seed": 42,
+  "test": {
+    "split": "PrivateTest",
+    "n": 2000,
+    "accuracy": 0.8775,
+    "macro_f1": 0.8819,
+    "weighted_f1": 0.8773,
+    "per_class": {
+      "angry": {
+        "precision": 0.8481,
+        "recall": 0.8791,
+        "f1-score": 0.8633,
+        "support": 273.0
+      },
+      "disgust": {
+        "precision": 0.8857,
+        "recall": 1.0,
+        "f1-score": 0.9394,
+        "support": 31.0
+      },
+      "fear": {
+        "precision": 0.8577,
+        "recall": 0.7993,
+        "f1-score": 0.8275,
+        "support": 294.0
+      },
+      "happy": {
+        "precision": 0.9563,
+        "recall": 0.9367,
+        "f1-score": 0.9464,
+        "support": 490.0
+      },
+      "neutral": {
+        "precision": 0.8455,
+        "recall": 0.8625,
+        "f1-score": 0.8539,
+        "support": 349.0
+      },
+      "sad": {
+        "precision": 0.8127,
+        "recall": 0.8127,
+        "f1-score": 0.8127,
+        "support": 331.0
+      },
+      "surprise": {
+        "precision": 0.9129,
+        "recall": 0.9483,
+        "f1-score": 0.9302,
+        "support": 232.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        240,
+        3,
+        6,
+        1,
+        8,
+        14,
+        1
+      ],
+      [
+        0,
+        31,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        15,
+        1,
+        235,
+        1,
+        16,
+        21,
+        5
+      ],
+      [
+        2,
+        0,
+        2,
+        459,
+        10,
+        6,
+        11
+      ],
+      [
+        7,
+        0,
+        8,
+        8,
+        301,
+        21,
+        4
+      ],
+      [
+        19,
+        0,
+        16,
+        6,
+        21,
+        269,
+        0
+      ],
+      [
+        0,
+        0,
+        7,
+        5,
+        0,
+        0,
+        220
+      ]
+    ],
+    "images_per_sec": 181.3
+  },
+  "train_check": {
+    "split": "Training",
+    "n": 2000,
+    "accuracy": 0.878,
+    "macro_f1": 0.882,
+    "weighted_f1": 0.8778,
+    "per_class": {
+      "angry": {
+        "precision": 0.853,
+        "recall": 0.8561,
+        "f1-score": 0.8546,
+        "support": 278.0
+      },
+      "disgust": {
+        "precision": 0.8824,
+        "recall": 1.0,
+        "f1-score": 0.9375,
+        "support": 30.0
+      },
+      "fear": {
+        "precision": 0.8509,
+        "recall": 0.8211,
+        "f1-score": 0.8357,
+        "support": 285.0
+      },
+      "happy": {
+        "precision": 0.9423,
+        "recall": 0.9423,
+        "f1-score": 0.9423,
+        "support": 503.0
+      },
+      "neutral": {
+        "precision": 0.8623,
+        "recall": 0.8324,
+        "f1-score": 0.8471,
+        "support": 346.0
+      },
+      "sad": {
+        "precision": 0.8184,
+        "recall": 0.8427,
+        "f1-score": 0.8304,
+        "support": 337.0
+      },
+      "surprise": {
+        "precision": 0.9123,
+        "recall": 0.9412,
+        "f1-score": 0.9265,
+        "support": 221.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        238,
+        0,
+        6,
+        5,
+        11,
+        17,
+        1
+      ],
+      [
+        0,
+        30,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        16,
+        0,
+        234,
+        2,
+        10,
+        17,
+        6
+      ],
+      [
+        4,
+        1,
+        6,
+        474,
+        5,
+        3,
+        10
+      ],
+      [
+        4,
+        0,
+        10,
+        17,
+        288,
+        25,
+        2
+      ],
+      [
+        16,
+        2,
+        14,
+        1,
+        19,
+        284,
+        1
+      ],
+      [
+        1,
+        1,
+        5,
+        4,
+        1,
+        1,
+        208
+      ]
+    ],
+    "images_per_sec": 198.9
+  },
+  "duplicates_test_in_train": {
+    "count": 288,
+    "of": 3589
+  },
+  "test_full": {
+    "split": "PrivateTest (полностью)",
+    "n": 3589,
+    "accuracy": 0.8838,
+    "macro_f1": 0.887,
+    "weighted_f1": 0.8837
+  }
+}

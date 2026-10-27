@@ -1,0 +1,35 @@
+{
+  "n": 500,
+  "sizes": {
+    "120": {
+      "yunet": {
+        "detection_rate": 0.946,
+        "ms_per_tile": 2.03
+      },
+      "haar": {
+        "detection_rate": 0.772,
+        "ms_per_tile": 5.49
+      }
+    },
+    "170": {
+      "yunet": {
+        "detection_rate": 0.97,
+        "ms_per_tile": 2.02
+      },
+      "haar": {
+        "detection_rate": 0.776,
+        "ms_per_tile": 6.01
+      }
+    },
+    "220": {
+      "yunet": {
+        "detection_rate": 0.978,
+        "ms_per_tile": 1.95
+      },
+      "haar": {
+        "detection_rate": 0.764,
+        "ms_per_tile": 6.43
+      }
+    }
+  }
+}

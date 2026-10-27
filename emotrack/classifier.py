@@ -24,14 +24,15 @@ def pick_device(device="auto"):
 class EmotionClassifier:
     def __init__(self, model_name=None, device=None, batch_size=None):
         import torch
-        from transformers import AutoImageProcessor, AutoModelForImageClassification
+        from transformers import AutoModelForImageClassification, ViTImageProcessorPil
 
         self.torch = torch
         self.model_name = model_name or settings.model_name
         self.device = pick_device(device or settings.device)
         self.batch_size = batch_size or settings.batch_size
         print(f"Загрузка модели {self.model_name} на {self.device}...")
-        self.processor = AutoImageProcessor.from_pretrained(self.model_name)
+        # PIL-вариант препроцессора: не требует torchvision (resize 224, нормализация)
+        self.processor = ViTImageProcessorPil.from_pretrained(self.model_name)
         self.model = AutoModelForImageClassification.from_pretrained(self.model_name)
         self.model.to(self.device).eval()
         # Индексы выходов модели в нашем порядке EMOTIONS
